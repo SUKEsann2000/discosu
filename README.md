@@ -1,0 +1,2 @@
+# discosu
+Discord With Osu!
