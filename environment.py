@@ -1,26 +1,27 @@
-from playwright.async_api import async_playwright
+from playwright.sync_api import sync_playwright
 
-async def get_environment():
-    print("Fetching environment information...")
+def get_environment():
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page()
+        page.goto("https://kamigame.jp/onepiece-bountyrush/page/263853947595306109.html")
+        page.wait_for_load_state("networkidle")
 
-    async with async_playwright() as p:
-        browser = await p.chromium.launch()
-        page = await browser.new_page()
-        await page.goto("https://kamigame.jp/onepiece-bountyrush/page/263853947595306109.html", wait_until="networkidle")
+        # 💡 ヘッダーを非表示にする
+        page.evaluate("""() => {
+            const header = document.querySelector('.kamigame-layout-dropmenu-header');
+            if (header) header.style.display = 'none';
+        }""")
 
-        # すべての画像が読み込まれるまで待つ
-        await page.evaluate("""
-            () => Promise.all(Array.from(document.images).map(img => {
-                if (img.complete) return Promise.resolve();
-                return new Promise(resolve => {
-                    img.addEventListener('load', resolve);
-                    img.addEventListener('error', resolve);
-                });
-            }))
-        """)
+        page.evaluate("""() => {
+            const ad = document.getElementById("overlay_ad_pc");
+            if (ad) ad.style.display = 'none';
+        }""")
 
+        # 対象テキストを含む要素を探す
+        element = page.query_selector(".tier-table")
 
-        element = await page.query_selector('.tier-table')  # 例: '#main' や '.header'など
-        await element.screenshot(path='partial_screenshot.png')
+        # その要素のスクリーンショットを保存
+        element.screenshot(path="ranking_clean.png")
 
-        await browser.close()
+        browser.close()
