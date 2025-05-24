@@ -5,7 +5,7 @@ load_dotenv()
 import os
 
 import osu
-
+import environment as envi
 
 TOKEN = os.getenv("DISCORD_TOKEN")
 
@@ -23,7 +23,6 @@ async def on_message(message):
         return
 
     if message.content.startswith("c!daily"):
-        print("Received c!daily command")
         channel = message.channel
         token = await osu.get_osu_token()
         beatmap = await osu.get_daily_beatmap(token)
@@ -41,5 +40,9 @@ async def on_message(message):
             )
         else:
             await channel.send("今日のデイリーチャレンジは見つかりませんでした。")
+    elif message.content.startswith("環境確認"):
+        channel = message.channel
+        env_info = await envi.get_environment()
+        await channel.send(f"環境情報:\n{env_info}")
 
 client.run(TOKEN)
