@@ -42,7 +42,9 @@ async def on_message(message):
             await channel.send("今日のデイリーチャレンジは見つかりませんでした。")
     elif message.content.startswith("環境確認"):
         channel = message.channel
+        await channel.send("環境情報を取得中...")
         env_info = await envi.get_environment()
-        await channel.send(f"環境情報:\n{env_info}")
+        await channel.send(f"環境情報:")
+        await message.channel.send(file=discord.File(env_info))
 
 client.run(TOKEN)
