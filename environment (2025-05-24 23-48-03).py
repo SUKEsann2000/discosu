@@ -1,4 +1,3 @@
-import asyncio
 from playwright.async_api import async_playwright
 
 async def get_environment():
@@ -14,14 +13,14 @@ async def get_environment():
             const header = document.querySelector('.kamigame-layout-dropmenu-header');
             if (header) header.style.display = 'none';
         }""")
-        #print("test")
+
         await page.evaluate("""() => {
             const ad = document.getElementById("overlay_ad_pc");
             if (ad) ad.style.display = 'none';
         }""")
-        print("test")
+
         # 対象テキストを含む要素を探す
-        element = await page.query_selector(".tier-table")
+        element = await page.query_selector(".tier-table", timeout=60000)
         print(element)
         # その要素のスクリーンショットを保存
         await element.screenshot(path="ranking_clean.png")
@@ -29,7 +28,3 @@ async def get_environment():
         await browser.close()
 
         return "ranking_clean.png"
-
-asyncio.run(get_environment())
-print("finished")
-
